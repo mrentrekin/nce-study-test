@@ -1,0 +1,366 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCE Practice Quiz</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        #progress {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        #timer {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: red;
+        }
+        #category {
+            font-size: 14px;
+            color: gray;
+            margin-bottom: 20px;
+        }
+        #question {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .option {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+        .option.selected {
+            background-color: #000000;
+            color: white;
+        }
+        #next {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #score {
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="timer"></div>
+        <div id="progress"></div>
+        <div id="category">National Counselor's Exam</div>
+        <div id="question"></div>
+        <div id="options"></div>
+        <button id="next">Next</button>
+        <div id="score" style="display: none;"></div>
+    </div>
+    <script>
+        const questions = [
+            {question: "Susie is playing with blocks and is trying to build a tower; she tries but cannot build a tower. Susie's mother helps her build a four-block tower. Later, Susie builds a four-block tower without her mother's help. According to Vygotsky, the inability to build the tower on her own is known as:", options: ["a. Scaffolding", "b. The zone of proximal development", "c. Assisted discovery", "d. Learning by imitation"], answer: 1},
+            {question: "According to Erickson, when an individual fails to develop a strong sense of identity, the individual will have troubles with the development of:", options: ["a. Autonomy", "b. Initiative", "c. Intimacy", "d. Integrity"], answer: 2},
+            {question: "Which of the following is the correct sequence of stages in Freud's theory of personality development?", options: ["a. Oral, genital, latency, phallic, anal", "b. Genital, oral, anal, phallic, latency", "c. Latency, phallic, anal, genital, oral", "d. Oral, anal, phallic, latency, genital"], answer: 3},
+            {question: "Jacob's father tells Jacob to clean his room. When Jacob asks why, his father responds, 'Because I said so.' The father's response is most representative of which parenting style?", options: ["a. Uninvolved", "b. Authoritarian", "c. Authoritative", "d. Permissive"], answer: 1},
+            {question: "Harry Harlow used baby monkeys and several different kinds of 'surrogate mothers' to investigate which factors are important in early development and attachment. According to his findings, baby monkeys:", options: ["a. preferred a soft terrycloth 'mother' to a wire-mesh 'mother' that held a bottle", "b. preferred a wire-mesh 'mother' that held a bottle to a soft terrycloth 'mother'", "c. showed no preference", "d. preferred neither 'mother'"], answer: 0},
+            {question: "Which of the following is a myth about suicide in the United States?", options: ["a. Male suicide is four times higher than that among females.", "b. It occurs in age groups of 90 years and up.", "c. Psychiatrists, physicians, and dentists are most prone.", "d. Asking someone about suicide may push that person over the edge."], answer: 3},
+            {question: "Cody does what his parents say because he doesn't want to lose his television privileges. This is an example of what level in Kohlberg's theory of moral development?", options: ["a. Integrity versus despair", "b. Preconventional", "c. Conventional", "d. Postconventional"], answer: 1},
+            {question: "Josie likes to play peek-a-boo with her little brother, Jack. According to Piaget, Jack finds this game fun because he has acquired ____________, which is one of the primary tasks of the sensorimotor stage of cognitive development.", options: ["a. conservation", "b. dual representation", "c. object permanence", "d. reversibility"], answer: 2},
+            {question: "The theorist associated with bonding and attachment is:", options: ["a. Bowlby", "b. Adler", "c. Freud", "d. Piaget"], answer: 0},
+            {question: "Henry, a 72-year-old widower, reminisces with his daughter about his life. He talks about his successes and regrets. This is an example of Erikson's:", options: ["a. intimacy stage", "b. generativity stage", "c. industry stage", "d. ego integrity stage"], answer: 3},
+            {question: "When it comes to displaying aggression, girls more often engage in ____________ aggression than boys.", options: ["a. hostile", "b. instrumental", "c. relational", "d. physical"], answer: 2},
+            {question: "All of the following are physical characteristics of Down Syndrome EXCEPT:", options: ["a. short, stocky build", "b. almond-shaped eyes", "c. large hands and feet", "d. flattened face"], answer: 2},
+            {question: "Which of the following statements is true when considering cultural and familial influences on self-esteem?", options: ["a. Chinese and Japanese children have higher self-esteem than North American children, mainly because their cultures have higher academic standards for achievement.", "b. Boys tend to have lower self-esteem than girls.", "c. African American children tend to have lower self-esteem than Caucasian children.", "d. An authoritative parenting style usually allows children to have especially high self-esteem."], answer: 3},
+            {question: "Research on gay and lesbian couples", options: ["a. They are more flexible in terms of gender roles than heterosexual couples", "b. They are as dedicated to and as effective at child rearing as are heterosexual parents.", "c. They are likely to divorce within five years of marriage", "d. They are less affectionate with each other than heterosexual partners"], answer: 1},
+            {question: "In the Stanford prison study, what caused the guards to treat the prisoners harshly?", options: ["a. The prisoners repeatedly taunted the guards", "b. The guards had histories of violence and aggression", "c. The guards were unable to abandon their roles as authority figures", "d. It was the social context that determined the behaviors of both the guards and the prisoners"], answer: 3},
+            {question: "In the original studies, Milgram and his colleagues found that people were more likely to disobey under all of the following circumstances EXCEPT when __________.", options: ["a. the victim was in an adjoining room so the 'teacher' heard every sound the victim made", "b. two experimenters issuing conflicting demands upon the 'teacher'", "c. the person ordering them to continue did so from a remote location", "d. the 'teacher' was aware of similar experiments and their results"], answer: 0},
+            {question: "In the Stanford prison simulation, male college students agreed to participate in an experiment to discover what would happen when they took on the roles of prisoners and guards. The researchers found that __________.", options: ["a. college students readily conform to roles", "b. within a short time the prisoners became distressed and helpless", "c. within six days the experiment had to be halted", "d. all of the above"], answer: 3},
+            {question: "In what ways do stereotypes distort reality?", options: ["a. Stereotypes exaggerate differences between groups", "b. Stereotypes exaggerate similarities within groups", "c. Stereotypes produce many similar reactions", "d. Stereotypes all of the above"], answer: 3},
+            {question: "Jennifer has to choose between spending the evening at home with her parents or spending the evening babysitting her little sister. Jennifer does not like either of these choices. This situation describes an:", options: ["a. approach-approach conflict", "b. avoidance-avoidance conflict", "c. approach-avoidance conflict", "d. multiple approach-avoidance conflict"], answer: 1},
+            {question: "Connie tells each of her clients that the best way she can help them is to attempt to look at the world from the client's point of view. This counselor is taking the _________ perspective", options: ["a. etic", "b. alloplastic", "c. emic", "d. ecocultural"], answer: 2},
+            {question: "Working with individuals from different cultures requires that the counselor:", options: ["a. have sensitivity and knowledge about other cultures", "b. make a referral to another counselor", "c. have a doctorate degree in counseling", "d. have the client change his/her view"], answer: 0},
+            {question: "A high standard of counseling practice when working with diverse populations involves all of the following EXCEPT:", options: ["a. treating all clients the same way", "b. being aware of one's own cultural heritage", "c. having the courage to confront fears and prejudices", "d. being empathetic to the client's worldview"], answer: 0},
+            {question: "When working with individuals from different cultures, the effective counselor may NOT:", options: ["a. maintain good eye contact at all times", "b. ask questions about the client's culture", "c. disclose his/her own level of comfort with the cultural differences", "d. clarify vague or unfamiliar terms used by the client"], answer: 0},
+            {question: "Murray is a bright student, but he procrastinates. He puts off writing term papers and gets incompletes, which eventually become Fs. Murray's therapist helps him establish small, specific goals rather than vague, long-range goals. The therapist also asks Murray to keep a diary of how he is spending his time when he is avoiding his studies. The method used to help Murray deal with his problem is __________ therapy.", options: ["a. psychodynamic", "b. behavioral", "c. Gestalt", "d. existential"], answer: 1},
+            {question: "The social learning perspective is to the psychodynamic perspective as ____________________ are to ________________________", options: ["a. bodily fluids; cognitive expectancies", "b. environmental conditions; unconscious dynamics", "c. conscious thoughts; feelings", "d. maladaptive assumptions; learned helplessness"], answer: 1},
+            {question: "The process of saying freely whatever comes to mind in connection with dreams, fantasies, or memories in the course of a psychodynamic therapy session, is referred to as _____________________________", options: ["a. systematic desensitization", "b. flooding", "c. free association", "d. dream analysis"], answer: 2},
+            {question: "Which of the following is not a behavioral therapy?", options: ["a. flooding", "b. skills training", "c. exposure", "d. unconditional positive regard"], answer: 3},
+            {question: "The primary goal of __________ therapy is to find meaning in life", options: ["a. rational-emotive", "b. reality", "c. existential", "d. transactional analysis"], answer: 2},
+            {question: "Which of the following pairings of problem and the most successful therapy for that problem is INCORRECT?", options: ["a. childhood behavior problems and existential therapy", "b. phobia and systematic desensitization", "c. depression and rational-emotive therapy", "d. anxiety and behavior therapy"], answer: 0},
+            {question: "The bond of confidence and mutual understanding established between therapist and client is called the _______.", options: ["a. therapeutic window", "b. therapeutic alliance", "c. emapthic bond", "d. therapeutic dialog"], answer: 1},
+            {question: "An apparent treatment success that is due to the patient's expectation or hopes rather than the treatment itself is called ____________.", options: ["a. attention placebo", "b. placebo effect", "c. spontaneous remission", "d. reactivity"], answer: 1},
+            {question: "In _________ therapy, the therapist uses logical arguments to challenge a client's unrealistic beliefs or expectations.", options: ["a. client-centered", "b. rational-emotive behavioral", "c. existential", "d. interactional"], answer: 1},
+            {question: "Systematic desensizitation and flooding are ___________ techniques", options: ["a. behavioral", "b. psychodynamic", "c. reality", "d. Adlerian"], answer: 0},
+            {question: "Which of the following types of therapists would be most likely to use free association and transference?", options: ["a. rational-emotive behavior therapists", "b. behavior therapists", "c. psychodynamic therapists", "d. client-centered therapists"], answer: 2},
+            {question: "_________ is a humanist approach that emphasizes the tragic aspects of life, the burden of responsibility, and the need to face the inevitability of death.", options: ["a. Social interest", "b. Existentialism", "c. Self-actualization", "d. Self-concept"], answer: 1},
+            {question: "According to Carl Rogers, __________ is love and support given to another with no strings attached.", options: ["a. the therapeutic alliance", "b. unconditional positive regard", "c. conditional acceptance", "d. role reversal"], answer: 1},
+            {question: "Which of the following pairs of personality theorists and perspectives is INCORRECT?", options: ["a. Abraham Maslow; humanist", "b. Gordon Allport; cognitive", "c. Karen Horney; psychodynamic", "d. Carl Rogers; humanist"], answer: 1},
+            {question: "Which of the following terms is associated with transactional analysis?", options: ["a. Free association", "b. Complementary transactions", "c. Dream analysis", "d. Life positions"], answer: 1},
+            {question: "Which one of the following does NOT belong with the other three?", options: ["a. Glasser", "b. Adler", "c. Perls", "d. Ellis"], answer: 0},
+            {question: "The withdrawal of reinforcement until the conditioned response no longer occurs is known as:", options: ["a. extinction", "b. systematic desensitization", "c. negative reinforcement", "d. punishment"], answer: 0},
+            {question: "Freud is to ego, id, and superego as ___________ is to parent, adult, and child.", options: ["a. Berne", "b. Adler", "c. Jung", "d. Perls"], answer: 0},
+            {question: "Developed by Luft and Ingham, ______________ asserts that there are four parts to the personality: the public self, the blind self, the private self, and the unknown self.", options: ["a. the Johari Window", "b. the ABC Model", "c. transactional analysis", "d. the ego-self realignment"], answer: 0},
+            {question: "In which is the focus on the meaning of life and the relevance of the individual experience?", options: ["a. Existential counseling", "b. Adlerian counseling", "c. Gestalt therapy", "d. Rational-emotive behavioral therapy"], answer: 0},
+            {question: "Popular techniques of this approach are role playing, 'empty chair,' and 'making the rounds.'", options: ["a. Adlerian", "b. Behavioral", "c. Gestalt", "d. Reality therapy"], answer: 2},
+            {question: "Popular techniques of this approach are examination of client's memories, 'spitting in the client's soup,' and 'catching oneself.'", options: ["a. Adlerian", "b. Behavioral", "c. Gestalt", "d. Reality therapy"], answer: 0},
+            {question: "In this therapeutic approach, the counselor's emphasis is on being authentic while concentrating on verbal and nonverbal messages.", options: ["a. Adlerian", "b. Existential", "c. Gestalt", "d. Reality therapy"], answer: 1},
+            {question: "Paradoxical intention, implosive therapy, and thought stopping are all techniques used by _____________ counselors.", options: ["a. behavioral", "b. psychoanalytic", "c. person-centered", "d. Adlerian"], answer: 0},
+            {question: "Stress inoculation is a concept introduced by:", options: ["a. John Krumboltz", "b. Joseph Wolpe", "c. Albert Bandura", "d. Donald Meichenbaum"], answer: 3},
+            {question: "According to Freud, _____________________ is the most important defense mechanism. An example of this defense mechanism is when a woman who has been physically abused by her spouse doesn't remember ever being hurt by him.", options: ["a. sublimation", "b. displacement", "c. repression", "d. rationalization"], answer: 2},
+            {question: "A dog that has been trained to stop and stand at attention when she hears a duck call does not stop and stand at attention when she hears a goose call. This is an example of:", options: ["a. stimulus discrimination", "b. stimulus response", "c. stimulus generalization", "d. stimulus shaping"], answer: 0},
+            {question: "The disadvantage of closed-ended questions is that the client usually fails to:", options: ["a. disclose personal information and continue to dialogue with the counselor", "b. feel that the counselor is genuinely interested in his/her situation", "c. elaborate on information", "d. All of the above are disadvantages of closed-ended questions."], answer: 3},
+            {question: "Rational-emotive behavior therapy follows a five-step system using ABCDE, where D stands for:", options: ["a. the affect", "b. the belief system", "c. the consequence", "d. disputing the irrational belief"], answer: 3},
+            {question: "The goals of this type of therapy include gaining knowledge about the self and recognizing and integrating the self.", options: ["a. Behavioral", "b. Jungian", "c. Gestalt", "d. Reality therapy"], answer: 1},
+            {question: "In order to elicit a conditioned response, the neutral stimulus that will become the conditioned stimulus must _________________ the unconditioned stimulus.", options: ["a. follow", "b. precede", "c. occur at the same time as", "d. None of the above"], answer: 1},
+            {question: "In contrast to feeling sorry for the client, the counselor needs to demonstrate ___________ toward the client.", options: ["a. sympathy", "b. empathy", "c. congruency", "d. emotionality"], answer: 1},
+            {question: "In order to facilitate growth in a client, the counselor uses all of the following strategies EXCEPT:", options: ["a. confrontation", "b. empathy", "c. self-disclosure", "d. abandonment"], answer: 3},
+            {question: "A(n) _____________ schedule of reinforcement is the most difficult to extinguish.", options: ["a. continuous", "b. fixed ratio", "c. intermittent", "d. fixed interval"], answer: 2},
+            {question: "The primary distinction between reinforcement and punishment is that reinforcement ___________ the likelihood of the behavior to occur again, while punishment _________________ the likelihood of the behavior to occur again.", options: ["a. sometimes increases; decreases", "b. increases; increases", "c. increases; decreases", "d. decreases; sometimes increases"], answer: 2},
+            {question: "Negative reinforcement _______________ the behavior by ________________ a reinforcer; positive reinforcement ______________ the behavior by ____________ a reinforcer.", options: ["a. increases, taking away; increases, adding", "b. increases, adding; decreases, taking away", "c. decreases, taking away; increases, adding", "d. decreases, adding; decreases, taking away"], answer: 0},
+            {question: "There are long silences, several members of the group are acting out, and it seems like all the group members are expressing frustrations with both the structure of the group and the way the group leader is functioning. Most likely this group is in the ___________ state of the group process.", options: ["a. working", "b. initial", "c. closing", "d. transition"], answer: 3},
+            {question: "From this perspective the group goals are to enable members to pay close attention to their here-and-now experiences so they can recognize and integrate disowned aspects of themselves.", options: ["a. Adlerian", "b. Psychodrama", "c. Existential", "d. Gestalt"], answer: 3},
+            {question: "Which of the following is NOT an advantage of group counseling?", options: ["a. Cost effectiveness", "b. Focus on individual needs", "c. Group cohesion", "d. Opportunities for feedback"], answer: 1},
+            {question: "As a leader of a group, Barb is very structured. She sets and directs all of the group's goals and activities and hardly ever asks the participants for input. Most likely, Barb has a(n) ________ style of leadership.", options: ["a. laissez-faire", "b. democratic", "c. planned", "d. authoritarian"], answer: 3},
+            {question: "What is likely to happen in a group when the leader is authoritarian?", options: ["a. Members become dependent on the leader", "b. Members interpret this style as the leader not interested in the group", "c. The group will become cohesive", "d. The group process will become productive"], answer: 0},
+            {question: "All of the following are characteristics of an open group EXCEPT:", options: ["a. Changing membership", "b. Changing leadership", "c. There is good cohesion", "d. New skills can be incorporated into the group easily"], answer: 2},
+            {question: "In contrast to a homogeneous group, a heterogeneous group:", options: ["a. Is more boring and tense", "b. Has members with less range of behaviors and experiences", "c. Has members with greater awareness of themselves and others", "d. Usually disintegrates"], answer: 2},
+            {question: "All of the following are assumptions of groups EXCEPT:", options: ["a. Growth depends on accurate feedback", "b. Goals are necessary for good group process", "c. Change is inevitable", "d. The leader is a member of the group"], answer: 3},
+            {question: "During the working stage of the group, the leader's role is to:", options: ["a. establish ground rules", "b. deal with conflict", "c. provide reinforcement, link themes, support risks, and encouraging translating insight into action.", "d. All of the above"], answer: 2},
+            {question: "The emphasis for this type of group is on prevention and development of healthy behaviors.", options: ["a. Secondary", "b. Tertiary", "c. Primary", "d. Quaternary"], answer: 2},
+            {question: "There is a distinction between group content and group process. An example of group process would be:", options: ["a. Sarah dominates the group by talking incessantly", "b. Jerry brings up his feelings of depression to the group", "c. Members discuss their fears about the future", "d. All of the above are examples of group process"], answer: 0},
+            {question: "A counselor in a social service agency working with economically deprived immigrants would focus on the person's most urgent need. The first priority would be the need for", options: ["a. self-actualization", "b. shelter and food", "c. esteem", "d. love and belonging"], answer: 1},
+            {question: "Freud is most closely associated with the idea of?", options: ["a. behavior modification", "b. rational thinking", "c. psychosexual stages", "d. reality therapy"], answer: 2},
+            {question: "Which of the following client behaviors is NOT a sign of client resistance?", options: ["a. hostility toward the counselor", "b. increased self-disclosure", "c. talking about nonpersonal issues", "d. arriving late for appointments"], answer: 1},
+            {question: "For Rogers, the best approach for bringing about personality change is to:", options: ["a. confront incongruency between real and ideal self", "b. interpret the client's past experiences", "c. unconditional positive regard", "d. analyze the content of dreams"], answer: 2},
+            {question: "Regarding the role of the group leader's values in group counseling situations, ethical practice implies that group leaders should:", options: ["a. impose personal values on group members", "b. avoid imposing personal values", "c. modify personal values to fit the group", "d. None of the above"], answer: 1},
+            {question: "When counselors refer to a test as a 'standardized test,' they are using the term, in part, to imply that", options: ["a. the test items are standard", "b. the test is widely used", "c. the test is valid for all populations", "d. there is uniformity in the administration and scoring of the test"], answer: 3},
+            {question: "Which of the following is the most appropriate career education activity for elementary school?", options: ["a. studying local want ads", "b. completing a job application", "c. developing an awareness of work as a life activity", "d. practicing interviews"], answer: 2},
+            {question: "Rogers holds that psychological imbalance results from a disparity between:", options: ["a. past and present strivings", "b. moral and immoral motives", "c. conception of self and the real self", "d. approach and avoidance tendencies"], answer: 2},
+            {question: "Which of the following theories of counseling is based on a logical, cognitive approach to the solution of the client's problems?", options: ["a. psychoanalytic", "b. rational emotive", "c. Rogerian", "d. Adlerian"], answer: 1},
+            {question: "Achievement tests may be", options: ["a. norm-referenced only", "b. criterion-referenced only", "c. both criterion- and norm-referenced", "d. neither criterion- nor norm-referenced"], answer: 2},
+            {question: "Goal attainment scaling is a method for evaluating", options: ["a. counseling research hypotheses", "b. client progress in counseling", "c. degree of accomplishment of counseling goals", "d. client satisfaction with counseling"], answer: 2},
+            {question: "According to Yalom, __________ is a necessary precondition for effective group therapy.", options: ["a. interpersonal learning", "b. group cohesiveness", "c. self-disclosure", "d. catharsis"], answer: 1},
+            {question: "A counselor asks, 'I wonder how the new job seems to you?' This is an example of what type of question?", options: ["a. closed", "b. leading", "c. open", "d. double"], answer: 2},
+            {question: "Heteronomous morality are two stages in the theory of moral development developed by", options: ["a. Piaget", "b. Kohlberg", "c. Erikson", "d. Hall"], answer: 0},
+            {question: "What does the principle of confidentiality encompass within the realm of counseling ethics?", options: ["a. Sharing client information freely with colleagues", "b. Disclosing client details in research without consent", "c. Releasing client records to third parties upon request", "d. Safeguarding client information, barring legal exceptions"], answer: 3},
+            {question: "The Standards of Preparation of the ACA's Council for Accreditation of Counseling and Related Programs (CACREP) emphasize that counselors should have comprehensive knowledge of human psycho-social development across the life span. The primary reason for this standard is that counselors with such knowledge will be better able to", options: ["a. develop their own theories of counseling", "b. understand clients' developmental concerns", "c. supervise paraprofessionals", "d. conduct research"], answer: 1},
+            {question: "Appropriate career education activities for the elementary school include", options: ["a. field trips to local businesses", "b. speakers from various occupations", "c. role-playing various jobs", "d. all of the above"], answer: 3},
+            {question: "When the slope of the regression line rises when moving left to right across a graphic representation of a group of scores, the counselor knows that this plot reflects a", options: ["a. positive correlation", "b. negative correlation", "c. zero correlation", "d. curvilinear correlation"], answer: 0},
+            {question: "B.F. Skinner is best known for his ________ procedures.", options: ["a. classical conditioning", "b. operant reinforcement", "c. modeling", "d. perceptual learning"], answer: 1},
+            {question: "Jerry Jones wanted to manage a business of his own but did not have the capital to get started. He settled for a job as a clerk in a sporting goods store but made contacts with others who would be willing to back him in setting up his own business. In a few years, with the help of backers, he opened his own store, 'The Fallen Arch.' This business flourished. Soon after, he capitalized on his public relations ability and expanded by opening branches in several other cities. If we use either Ginzberg's first or revised formulations to explain Jerry's career development, we would say tht this is an illustration of", options: ["a. optimization", "b. compromise", "c. fantasy", "d. realism"], answer: 0},
+            {question: "According to the counseling model developed by Carkhuff, which of the counselor's responses listed below is most appropriate for the statement made by a client during an initial counseling interview? Client: 'I'm not really sure why I am here; I've been to counselors before and they've never really helped.' Counselor:", options: ["a. 'You sound angry at your previous counselors.'", "b. 'Why do you think your previous counselors haven't helped you?'", "c. 'You're uncertain why you came here today because you don't feel you've been helped in the past.'", "d. 'You sound like you want to be helped, but you're not sure what to expect from counseling.'"], answer: 2},
+            {question: "Masters and Johnson have delineated a four-phase sexual response cycle. Which of the following is a phase in their conceptualization?", options: ["a. desire", "b. excitement", "c. arousal", "d. orgasm"], answer: 1},
+            {question: "Interest inventories are least useful for", options: ["a. predicting achievement", "b. predicting job satisfaction", "c. predicting job success", "d. stimulating vocational exploration"], answer: 0},
+            {question: "Which of the following is a true statement about Gestalt therapy groups?", options: ["a. Members must have extensive prior individual counseling.", "b. Members must be screened by the leader.", "c. The major confrontation a group member experiences is with the leader.", "d. The leader uses a co-leader to monitor group process."], answer: 2},
+            {question: "Which of the following counseling approaches places central importance on clients making value judgments about current behaviors?", options: ["a. client-centered therapy", "b. reality therapy", "c. rational-emotive therapy", "d. psychoanalysis"], answer: 1},
+            {question: "In a normal distribution which as the highest value?", options: ["a. mode", "b. mean", "c. median", "d. all of the above"], answer: 3},
+            {question: "Which of the following types of variables in NOT synonymous with the term 'independent variable?'", options: ["a. stimulus", "b. maniputated", "c. response", "d. antecedent"], answer: 2},
+            {question: "If counseling researchers are concerned that pretesting may somehow sensitize or alter respondents' responses, they are worried about", options: ["a. statistical regression", "b. internal validity", "c. external validity", "d. maturation"], answer: 1},
+            {question: "Which is the median stanine?", options: ["a. 3", "b. 4", "c. 5", "d. 6"], answer: 2},
+            {question: "Counselors doing group counseling know that recognizing that working through resistance is a major task of the __________ stage in the group process.", options: ["a. initial", "b. transition", "c. working", "d. closing"], answer: 1},
+            {question: "A norm table may include all of the following EXCEPT", options: ["a. raw scores", "b. percentile ranks", "c. standard scores", "d. standard error of measurement"], answer: 3},
+            {question: "When utilizing the stages of change model, a client expressing the intention to change within the next six months is in which stage?", options: ["a. pre-contemplation", "b. contemplation", "c. preparation", "d. action"], answer: 1},
+            {question: "Which of the following statements accurately describes current knowledge of the relationship between peoples' cultural and economic characteristics and their career development?", options: ["a. Cultural deprivation is not a factor in career development", "b. Cultural deprivation is a factor in career development", "c. Cultural deprivation is a factor in career development only for men", "d. Research is lacking in regard to understanding of the relationship between cultural deprivation and career development"], answer: 3},
+            {question: "What is the mean of a z score distribution?", options: ["a. 0", "b. 1", "c. 10", "d. 50"], answer: 0},
+            {question: "By 'congruence,' Rogers means close matching of?", options: ["a. thoughts and feelings", "b. feelings and behavior", "c. awareness and experience", "d. experience and unconscious demands"], answer: 2},
+            {question: "In Erikson's theory of the eight stages of human development, at what stage would people most likely encounter the psychological crisis of initiative vs. guilt?", options: ["a. preschool", "b. early school", "c. preadolescence", "d. adolescence"], answer: 0},
+            {question: "Life-styling workshops generally include:", options: ["a. role-playing and group discussions", "b. lectures and demonstrations", "c. homework assignments", "d. career interest testing"], answer: 0},
+            {question: "Counselors use __________ groups to help members fulfill their needs for support, feedback, and learning.", options: ["a. T-groups", "b. sensitivity", "c. encounter", "d. marathon"], answer: 1},
+            {question: "The variable that appears, disappears, or changes as the counseling researcher applies, removes, or varies the independent variable in an experimental study is called", options: ["a. intervening", "b. dependent", "c. confounding", "d. constant"], answer: 0},
+            {question: "A counselor intensifies a client's emotional state to show the client the irrationality of her emotional reaction. What is this technique known as?", options: ["a. Paradoxical intention", "b. Transactional-Analysis", "c. Systematic Desensitization", "d. None of the above"], answer: 0},
+            {question: "Despite its age, Kohlberg's Theory of Moral Development is still in widespread use. Which of the following is the final level in the theory?", options: ["a. Principled thought", "b. Self-actualization", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which of the following interventions is not commonly used in Interpersonal Therapy (IPT)?", options: ["a. Interpersonal Therapy interventions", "b. The ABC Model", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "Members of a counseling group that score high in authoritarianism also tend to score high in independence.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "If a child is learning to use abstract concepts, which of Piaget's stages is she in?", options: ["a. Formal Operational Stage", "b. Concrete Operational Stage", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Approximately how old is the child in question 5?", options: ["a. Around 11 or 12", "b. Around 7 or 8", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "If someone is thinking about committing suicide, asking them whether they are thinking about suicide will not cause them to commit suicide.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Under which of the following circumstances is it not okay to break patient confidentiality?", options: ["a. When someone's safety is at risk", "b. When courts subpoena charts", "c. When the patient's employer requests information", "d. None of the above"], answer: 2},
+            {question: "You are using the ABC model of cognitive therapy. Which model are you trying to promote in your clients after a negative event?", options: ["a. Rational beliefs", "b. Irrational beliefs", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Carl Jung's Theory of Archetypes is still very influential, and several of them are listed below. Choose the one that is not correct.", options: ["a. The Shadow represents sex and life instincts", "b. The Hero represents a champion defender", "c. The Wise Old Woman is helpful and a symbol of female nature", "d. All are correct"], answer: 3},
+            {question: "The mean, median and mode are not at the same point on a normal curve.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "Which of the following kinds of therapy seeks to help clients find their answers to questions such as: Why am I here? Is this all there is? Why do people suffer?", options: ["a. Existential therapy", "b. Client-centered therapy", "c. Cognitive behavioral therapy", "d. Holistic health therapy"], answer: 0},
+            {question: "A client is 35. She is married, has two kids and is working on a big promotion at work. She is focused entirely on her family and career. Which of Erickson's Stages of Psychosocial Development is she in?", options: ["a. Generativity vs. Stagnation", "b. Industry vs. Inferiority", "c. Integrity vs. Despair", "d. Intimacy vs. Isolation"], answer: 0},
+            {question: "Crites is the researcher that first described the concept of 'career maturity.'", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "A dog is trained to salivate at the ringing of a bell. What form of conditioning is this?", options: ["a. Classical conditioning", "b. Operant conditioning", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "All humans have a five-stage sleep cycle and all cycle through the stages in the same order. Choose the correct sequence.", options: ["a. Stage One to Two to Three to Four to REM", "b. Stage One to REM to Two to Three to Four", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "The 'fields and levels' approach to group career counseling uses one of the theories developed by which famous theorist?", options: ["a. Roe", "b. Carl Jung", "c. Holland", "d. None of the above"], answer: 0},
+            {question: "What traits originate in the cerebral cortex?", options: ["a. Advanced skills", "b. Basic reflexes", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "A conditioned association is not a learned association.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "What type of partial reinforcement produces the best response to stimuli?", options: ["a. Variable ratio schedule", "b. Fixed ratio schedule", "c. Fixed interval schedule", "d. Variable interval schedule"], answer: 0},
+            {question: "The archetype of the 'Shadow' encompasses which of the following?", options: ["a. The dark side of someone's personality", "b. The light side of someone's personality", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "A counselor that decides his consultancy fee job-by-job instead of setting a standard rate is using a variable-ratio reinforcement schedule.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Some counseling methods are 'product-oriented,' while others are 'process-oriented.' Which of the following is more interested in the product than the process?", options: ["a. Behavioral counseling", "b. Transactional-analysis", "c. Client-centered", "d. None of the above"], answer: 0},
+            {question: "Which type of memory retrieval requires a person to reconstruct a memory?", options: ["a. Recollection", "b. Recall", "c. Recognition", "d. None of the above"], answer: 0},
+            {question: "Behavioral reinforcers always raise behavioral probability.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "What is one of the most important hallmarks of the Formal Operations stage of cognitive development?", options: ["a. Abstract concepts", "b. Concrete operations", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "What will the standard error of measurement tell you about a test?", options: ["a. How an individual's scores would fall if given the same assessment over time", "b. If the test is measuring what it claims to measure", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "The four lobes of the human brain are each responsible for handling different tasks. Which of these lobes is responsible for processing tactile sensory information?", options: ["a. Parietal Lobe", "b. Occipital Lobe", "c. Frontal Lobe", "d. Temporal Lobe"], answer: 0},
+            {question: "Which of the following would not be a part of a standard first counseling session with a therapist who was practicing client-centered counseling?", options: ["a. Discussion guided by the client", "b. Focus on the counselor directing the session", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "If a counselor's role changes from a nonforensic evaluative role to a therapeutic role, the client must be informed of the change as a matter of __________________.", options: ["a. Informed consent", "b. Confidentiality", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Who developed the technique of paradoxical intention?", options: ["a. Victor Frankl", "b. Wolpe", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "John and Carol took the same test. John got a score of 87 and Carol got a score of 73. To determine if the differences in scores is the result of chance, a counselor would need to know which of the following characteristics of the test?", options: ["a. Standard error of measurement", "b. Standard error of the mean", "c. Standard deviation", "d. None of the above"], answer: 0},
+            {question: "Who has most extensively researched and described the concept of career maturity?", options: ["a. Crites", "b. Super", "c. Ginzberg", "d. Hoyt"], answer: 0},
+            {question: "The correct order of Piaget's 4 stages is:", options: ["a. Sensorimotor, Preoperational, Concrete Operational, Formal Operational", "b. Formal Operational, Concrete Operational, Preoperational, Sensorimotor", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "John Bowlby is associated with:", options: ["a. Attachment Theory", "b. Career guidance", "c. Psychodrama", "d. None of the above"], answer: 0},
+            {question: "Culture can be defined as:", options: ["a. Social behavior and norms found in human societies", "b. A way of life for certain groups", "c. Both a and b", "d. None of the above"], answer: 2},
+            {question: "Cultural norms:", options: ["a. Provide a roadmap showing how to interact", "b. Help understand behavior and actions", "c. Both a and b", "d. None of the above"], answer: 1},
+            {question: "Talking about difficulties to purge them is a curative process known as:", options: ["a. Catharsis", "b. Hypnosis", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which theorist spoke of social connectedness?", options: ["a. Adler", "b. Freud", "c. Ellis", "d. None of the above"], answer: 0},
+            {question: "The difference between open and closed groups is:", options: ["a. Closed groups do not allow new members", "b. Open groups allow new members", "c. Both a and b", "d. None of the above"], answer: 2},
+            {question: "An advantage of having coleaders for a group is:", options: ["a. Multiple benefits for group members", "b. None", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which theorist believed a person's personality needs to be congruent with their work environment?", options: ["a. Holland", "b. Parsons", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which person is associated with the beginning of the guidance movement?", options: ["a. Frank Parsons", "b. Adler", "c. Freud", "d. Ellis"], answer: 0},
+            {question: "What does RIASEC stand for?", options: ["a. Realistic, Investigative, Artistic, Social, Enterprising, Conventional", "b. None", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which is NOT an example of a Computer Assisted Career Guidance System (CACGS)?", options: ["a. SIGI Plus", "b. Choices", "c. Discover", "d. Indeed"], answer: 3},
+            {question: "An ethical dilemma occurs when a counselor feels pulled in two different directions.", options: ["a. True", "b. False", "c. Both a and b", "d. None of the above"], answer: 0},
+            {question: "Which of the following actions is most appropriate as an initial step when a counselor encounters an ethical dilemma that may involve legal requirements?", options: ["a. Always prioritize the law over the code of ethics.", "b. Consult with a supervisor or colleague for guidance.", "c. Ignore the code of ethics as it is just a guideline.", "d. Choose whichever option is the easiest to follow."], answer: 1},
+            {question: "A client tells you that she wants to friend you on social media. What is the most appropriate response?", options: ["a. Accept the friend request to show the client that you are approachable and friendly.", "b. Decline the friend request and explain your professional boundaries to the client.", "c. Ignore the friend request and do not mention it in your next session with the client.", "d. Accept the friend request but avoid engaging with the client’s posts."], answer: 1},
+            {question: "During an intake interview, a client reports feeling sad most of the day nearly every day, a loss of interest in activities they once enjoyed, difficulty sleeping, decreased energy, and poor concentration for the past month. The client also reports that these symptoms are interfering with work and relationships. As a counselor, your preliminary diagnosis would be:", options: ["a. Generalized Anxiety Disorder (GAD)", "b. Obsessive-Compulsive Disorder (OCD)", "c. Major Depressive Disorder (MDD)", "d. Post-Traumatic Stress Disorder (PTSD)"], answer: 2},
+            {question: "A 16-year-old client discloses that they are experiencing constant bullying at school, which is causing them significant distress. As a counselor, what would be the most appropriate initial step in addressing this issue?", options: ["a. Advise the client to ignore the bullies and focus on their studies.", "b. Contact the school immediately and demand action.", "c. Encourage the client to retaliate against the bullies.", "d. Validate the client’s experiences and feelings, and explore strategies for coping and seeking support."], answer: 3},
+            {question: "You are working with a client who is dealing with severe social anxiety. The client has expressed a desire to be able to attend social events without experiencing panic attacks. As part of your treatment plan, you decide to incorporate exposure therapy. Which of the following best describes how you would approach this?", options: ["a. Immediately have the client attend a large social gathering and instruct them to interact with as many people as possible.", "b. Gradually expose the client to social situations, starting with less threatening scenarios and working up to more challenging ones.", "c. Suggest the client to avoid social situations altogether until they feel ready to face them.", "d. Ask the client to repeatedly visualize attending social events without providing any further intervention."], answer: 1},
+            {question: "Maria, a new client, comes to you expressing feelings of overwhelming sadness, hopelessness, and loss of interest in activities she previously enjoyed. She mentions that these feelings have persisted for over two weeks. As a counselor, your best initial approach would be to:", options: ["a. Immediately start Maria on cognitive-behavioral therapy.", "b. Assess Maria for potential suicidal ideation.", "c. Encourage Maria to engage in activities that she used to enjoy.", "d. Refer Maria to a psychiatrist for medication."], answer: 1},
+            {question: "A client tells you they are struggling with feelings of isolation and loneliness since they moved to a new city for a job. They express a willingness to try new things to overcome their feelings of isolation and ask, “Do you have any suggestions for where to start?” Which of the following is the most appropriate response to the client’s situation?", options: ["a. “That’s a positive attitude to have. Joining a club or activity group in your city could be a good way to meet new people.”", "b. “I can understand why you feel that way. It must be challenging to adapt to a new city and not have familiar faces around.”", "c. “You should try to be more outgoing and social. That might help you make friends.”", "d. “Maybe you should consider moving back to where you came from if you’re not happy here.”"], answer: 0},
+            {question: "Which of the following actions is most appropriate as an initial step when a counselor encounters an ethical dilemma that may involve legal requirements?", options: ["a. Always prioritize the law over the code of ethics.", "b. Consult with a supervisor or colleague for guidance.", "c. Ignore the code of ethics as it is just a guideline.", "d. Choose whichever option is the easiest to follow."], answer: 1},
+            {question: "A counselor receives a gift from a client. What is the most appropriate action for the counselor to take?", options: ["a. Accept the gift without any discussion.", "b. Politely decline the gift.", "c. Accept the gift but discuss the implications and context with the client.", "d. Report the client for attempting to give a gift."], answer: 2},
+            {question: "A new client comes to you expressing difficulty in concentrating, fatigue, and feeling sad most of the time. Which assessment tool is most appropriate for initially evaluating whether the client might be experiencing depression?", options: ["a. Minnesota Multiphasic Personality Inventory (MMPI).", "b. Beck Depression Inventory (BDI).", "c. Myers-Briggs Type Indicator (MBTI).", "d. Rorschach Inkblot Test."], answer: 1},
+            {question: "During an initial intake interview, a client reports experiencing severe anxiety attacks. What is the most appropriate next step for the counselor to take?", options: ["a. Immediately refer the client to a psychiatrist for medication.", "b. Conduct a thorough assessment to understand the context and severity of the anxiety attacks.", "c. Suggest the client to try deep breathing and relaxation techniques without further assessment.", "d. Cancel future appointments as the counselor is not equipped to handle severe cases."], answer: 1},
+            {question: "A client with a history of trauma is experiencing flashbacks and nightmares. Which therapeutic approach is particularly effective in treating clients with Post-Traumatic Stress Disorder (PTSD)?", options: ["a. Cognitive Processing Therapy (CPT).", "b. Reality Therapy.", "c. Person-Centered Therapy.", "d. Existential Therapy."], answer: 0},
+            {question: "A couple comes to you seeking help for communication issues in their relationship. Which therapeutic approach is most effective for working with couples to improve communication and resolve conflicts?", options: ["a. Play Therapy.", "b. Dialectical Behavior Therapy (DBT).", "c. Emotionally Focused Therapy (EFT).", "d. Psychodynamic Therapy."], answer: 2},
+            {question: "A client is diagnosed with Generalized Anxiety Disorder (GAD). Which of the following is an important component to include in a CBT-based treatment plan for this client?", options: ["a. Cognitive restructuring techniques.", "b. Analysis of past life events.", "c. Exposure to feared objects or situations.", "d. Improving social status and financial standing."], answer: 0},
+            {question: "When creating a treatment plan for a client with depression, what should be an initial short-term goal?", options: ["a. Complete elimination of depressive symptoms within two weeks.", "b. Help the client to secure a fulfilling job.", "c. Improvement in daily functioning and engagement in activities.", "d. Ensure the client forms at least three new close friendships."], answer: 2},
+            {question: "A counselor is working with a client who frequently interrupts and talks over the counselor. Which of the following interventions would be most appropriate for addressing this behavior in session?", options: ["a. Ignore the interruptions and continue speaking.", "b. Raise voice to talk over the client.", "c. End the session early because of the interruptions.", "d. Set boundaries and communicate the importance of mutual respect in conversation."], answer: 3},
+            {question: "A client is struggling with decision-making and often seeks the counselor’s advice on personal matters. What is the most appropriate intervention for promoting the client’s autonomy in decision-making?", options: ["a. Provide direct advice on all decisions.", "b. Encourage the client to make decisions based on intuition.", "c. Have the client write a pros and cons list for each decision.", "d. Facilitate exploration of values, goals, and options to support informed decision-making."], answer: 3},
+            {question: "Which of the following is considered a core attribute of an effective counselor?", options: ["a. Ability to solve clients’ problems directly.", "b. Empathy and understanding toward clients’ experiences.", "c. Being highly directive and controlling in sessions.", "d. Expressing personal opinions on clients’ life choices."], answer: 1},
+            {question: "In counseling, what is the term used for the counselor’s ability to communicate understanding, acceptance, and respect, thereby enabling the client to express thoughts and emotions freely?", options: ["a. Positive regard.", "b. Countertransference.", "c. Reflection.", "d. Unconditional positive regard."], answer: 3},
+            {question: "A group counselor uses techniques based on implosive therapy in her work. Which theorist is responsible for implosive therapy?", options: ["a. ellis", "b. beck", "c. janov", "d. stampfl"], answer: 3},
+            {question: "A group counselor decides to make graphs of the psychological test data for all of her clients over the past year. When she plots the distribution of Beck Depression Inventory data, she notices it is skewed to the left. Which of the following statements is true if a distribution is skewed to the left?", options: ["a. the mean is greater than the median", "b. the mean is less than the median", "c. the mean and median are the same", "d. the mode is the best measure of center"], answer: 1},
+            {question: "Susie is playing with blocks and is trying to build a tower; she tries but cannot build a tower. Susie's mother helps her build a four-block tower. Later, Susie builds a four-block tower without her mother's help. According to Vygotsky, the inability to build the tower on her own is known as:", options: ["a. scaffolding", "b. the zone of proximal development", "c. assisted discovery", "d. learning by imitation"], answer: 1},
+            {question: "According to Erickson, when an individual fails to develop a strong sense of identity, the individual will have troubles with the development of:", options: ["a. autonomy", "b. initiative", "c. intimacy", "d. integrity"], answer: 2},
+            {question: "Which of the following is the correct sequence of stages in Freud's theory of personality development?", options: ["a. Oral, genital, latency, anal, phallic", "b. Genital, anal, phallic, oral, latency", "c. Latency, phallic, oral, anal, genital", "d. Oral, anal, phallic, latency, genital"], answer: 3},
+            {question: "Jacob's father tells Jacob to clean his room. When Jacob asks why, his father responds, 'Because I said so.' The father's response is most representative of which parenting style?", options: ["a. Uninvolved", "b. Authoritarian", "c. Authoritative", "d. Permissive"], answer: 1},
+            {question: "Harry Harlow used baby monkeys and several different kinds of 'surrogate mothers' to investigate which factors are important in early development and attachment. According to his findings, baby monkeys:", options: ["a. preferred a soft terrycloth 'mother' to a wire-mesh 'mother' that held a bottle", "b. preferred a wire-mesh 'mother' that held a bottle to a soft terrycloth 'mother'", "c. showed no preference", "d. preferred neither 'mother'"], answer: 0},
+            {question: "Which of the following is a myth about suicide in the United States?", options: ["a. Male suicide is four times higher than that among females.", "b. It occurs in age groups of 90 years and up.", "c. Psychiatrists, physicians, and dentists are most prone.", "d. Asking someone about suicide may push that person over the edge."], answer: 3},
+            {question: "Cody does what his parents say because he doesn't want to lose his television privileges. This is an example of what level in Kohlberg's theory of moral development?", options: ["a. Integrity versus despair", "b. Preconventional", "c. Conventional", "d. Postconventional"], answer: 1},
+            {question: "Josie likes to play peek-a-boo with her little brother, Jack. According to Piaget, Jack finds this game fun because he has acquired ____________, which is one of the primary tasks of the sensorimotor stage of cognitive development.", options: ["a. conservation", "b. dual representation", "c. object permanence", "d. reversibility"], answer: 2},
+            {question: "The theorist associated with bonding and attachment is:", options: ["a. Bowlby", "b. Adler", "c. Freud", "d. Piaget"], answer: 0},
+            {question: "Henry, a 72-year-old widower, reminisces with his daughter about his life. He talks about his successes and regrets. This is an example of Erikson's:", options: ["a. intimacy stage", "b. generativity stage", "c. industry stage", "d. ego integrity stage"], answer: 3},
+            {question: "When it comes to displaying aggression, girls more often engage in ____________ aggression than boys.", options: ["a. hostile", "b. instrumental", "c. relational", "d. physical"], answer: 2},
+            {question: "All of the following are physical characteristics of Down Syndrome EXCEPT:", options: ["a. short, stocky build", "b. almond-shaped eyes", "c. large hands and feet", "d. flattened face"], answer: 2},
+            {question: "Which of the following statements is true when considering cultural and familial influences on self-esteem?", options: ["a. Chinese and Japanese children have higher self-esteem than North American children, mainly because their cultures have higher academic standards for achievement.", "b. Boys tend to have lower self-esteem than girls.", "c. African American children tend to have lower self-esteem than Caucasian children.", "d. An authoritative parenting style usually allows children to have especially high self-esteem."], answer: 3},
+            {question: "Freud's stages are psychosexual while Erik Erikson's stages are", options: ["a. psychobiological", "b. psychopharmacological", "c. psychopharmaceutical", "d. psychosocial"], answer: 3},
+            {question: "In Freud's psychodynamic theory, instincts are emphasized. Erik Erikson is an ego psychologist. Ego psychologists", options: ["a. emphasize id impulses", "b. refute his notion of the Oedipus and Electra conflicts", "c. believe in man's powers of reasoning to control behavior", "d. are sometimes known as radical behaviorists"], answer: 2},
+            {question: "Psychodynamic theories focus on___________ __________ rather than cognitive factors when counseling clients.", options: ["a. conscious processes", "b. unconscious processes", "c. behavioral processes", "d. humanistic processes"], answer: 1},
+            {question: "The ___ is logical, rational, and utilizes the power of reasoning and control to keep impulses in check. The reality principle.", options: ["a. id", "b. ego", "c. superego", "d. conscious"], answer: 1},
+            {question: "The behaviorist generally feels that if it can't be __________ then it doesn't exist.", options: ["a. seen", "b. heard", "c. measured", "d. felt"], answer: 2},
+            {question: "The __ is chaotic and concerned only with the body, not with the outside world. This is the pleasure principle and houses the animalistic instincts.", options: ["a. ego", "b. superego", "c. id", "d. unconscious"], answer: 2},
+            {question: "The only psychoanalyst who created a developmental theory which encompasses the entire life span was", options: ["a. Sigmund Freud", "b. Erik Erikson", "c. Jean Piaget", "d. Albert Bandura"], answer: 1},
+            {question: "The statement 'the ego is dependent on the id' would most likely reflect the work of", options: ["a. Erik Erikson", "b. Sigmund Freud", "c. Jay Haley", "d. Arnold Lazarus"], answer: 1},
+            {question: "Known for his ideas related to adult cognitive development; especially regarding college students. Stresses a concept known as dualistic thinking, common to teens in which things are conceptualized as good or bad or right or wrong.", options: ["a. Erik Erikson", "b. Jean Piaget", "c. Sigmund Freud", "d. Robert Perry"], answer: 3},
+            {question: "Known for his work in strategic and problem-solving therapy, often utilizing the technique of paradox. Claims to have acquired information by studying works of Milton H. Erickson.", options: ["a. Jay Haley", "b. Arnold Lazarus", "c. Robert Perry", "d. Joseph Wolpe"], answer: 0},
+            {question: "Considered a pioneer in the behavior therapy movement, especially in regard to the use of systematic desensitization, a technique which helps client cope with phobias. Today his name is associated with multimodal therapy.", options: ["a. Joseph Wolpe", "b. Arnold Lazarus", "c. Albert Ellis", "d. Aaron Beck"], answer: 1},
+            {question: "Known figure in the area of adult cognitive development. His model stresses interpersonal development. His theory is billed as a 'constructive model of development, meaning that individuals construct reality through the lifespan.'", options: ["a. Robert Keegan", "b. Carol Gilligan", "c. Lawrence Kohlberg", "d. Erik Erikson"], answer: 0},
+            {question: "Jean Piaget's idiographic approach created his theory with four stages. The correct order from stage 1 to stage 4 is", options: ["a. operations, concrete operations, formal operations, sensorimotor", "b. formal operations, concrete operations, preoperations, sensorimotor", "c. preoperations, sensorimotor, formal operations, concrete operations", "d. sensorimotor, preoperations, concrete operations, formal operations"], answer: 3},
+            {question: "Idiographic approaches to theories, such as Freud and Piaget, examine _________ in depth.", options: ["a. groups", "b. populations", "c. individuals", "d. societies"], answer: 2},
+            {question: "In contrast to idiographic approaches, nomothetic approaches (such as behaviorism or the DSM) student general principles that apply to", options: ["a. individuals", "b. groups", "c. societies", "d. the population"], answer: 3}
+        ];
+
+        let currentQuestion = 0;
+        let selectedOption = -1;
+        let score = 0;
+        let timeLeft = 7200; // 2 hours in seconds
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = `Time left: ${Math.floor(timeLeft / 3600)}:${Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showScore();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                clearInterval(timerInterval);
+                showScore();
+                return;
+            }
+            document.getElementById('progress').innerText = `${currentQuestion + 1}/${questions.length}`;
+            document.getElementById('question').innerText = questions[currentQuestion].question;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            selectedOption = -1;
+            questions[currentQuestion].options.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.classList.add('option');
+                div.innerText = opt;
+                div.onclick = () => selectOption(index);
+                optionsDiv.appendChild(div);
+            });
+        }
+
+        function selectOption(index) {
+            selectedOption = index;
+            const optionElems = document.querySelectorAll('.option');
+            optionElems.forEach((el, i) => {
+                el.classList.toggle('selected', i === index);
+            });
+        }
+
+        function showScore() {
+            document.getElementById('timer').style.display = 'none';
+            document.getElementById('progress').style.display = 'none';
+            document.getElementById('category').style.display = 'none';
+            document.getElementById('question').style.display = 'none';
+            document.getElementById('options').style.display = 'none';
+            document.getElementById('next').style.display = 'none';
+            document.getElementById('score').style.display = 'block';
+            document.getElementById('score').innerText = `Your score: ${score} / ${questions.length}`;
+        }
+
+        document.getElementById('next').onclick = () => {
+            if (selectedOption !== -1) {
+                if (selectedOption === questions[currentQuestion].answer) {
+                    score++;
+                }
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                alert('Please select an option');
+            }
+        };
+
+        startTimer();
+        loadQuestion();
+    </script>
+</body>
+</html>
+```
